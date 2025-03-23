@@ -1,11 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Estación Meteo</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Estación Meteo León</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      color: white;
+      background: linear-gradient(to bottom, #3a7bd5, #00d2ff);
+      transition: background 0.5s ease;
+    }
+    .container {
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    .card {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 1rem;
+      padding: 2rem;
+      margin: 1rem auto;
+      max-width: 400px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+    .label {
+      font-size: 1.2rem;
+      margin-bottom: 0.5rem;
+    }
+    .value {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(to bottom, #1e3c72, #2a5298);
+      }
+    }
+  </style>
 </head>
 <body>
-  <h1>¡Hola desde tu estación meteorológica!</h1>
-  <p>Esto es una prueba para Render.</p>
+  <div class="container">
+    <h1>Estación Meteo León</h1>
+    <div class="card">
+      <div class="label">Temperatura</div>
+      <div class="value">22°C</div>
+    </div>
+    <div class="card">
+      <div class="label">Humedad</div>
+      <div class="value">65%</div>
+    </div>
+    <div class="card">
+      <div class="label">Velocidad del viento</div>
+      <div class="value">15 km/h</div>
+    </div>
+  </div>
 </body>
 </html>
