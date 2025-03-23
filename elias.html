@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Estación Meteorológica</title>
+  <title>El tiempo en Alfarnate</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
@@ -60,17 +60,14 @@
   </style>
 </head>
 <body>
-  <button class="top-right-button" onclick="window.location.href='historia88l777.html'">
-    TIEMPO DETALLADO
-  </button>
-
   <div class="weather-screen">
-    <h1 class="text-2xl font-bold">📡 Estación Meteorológica en tiempo real</h1>
+    <h1 class="text-2xl font-bold">📡 EL TIEMPO EN ALFARNATE AL MINUTO</h1>
     <div class="data-grid">
       <div class="data-box"><p class="label">🌡️ Temperatura</p><p class="value" id="temperature">--</p></div>
       <div class="data-box"><p class="label">💧 Humedad</p><p class="value" id="humidity">--</p></div>
       <div class="data-box"><p class="label">💨 Viento</p><p class="value" id="wind-speed">--</p></div>
       <div class="data-box"><p class="label">🌧️ Lluvia</p><p class="value" id="rainfall">--</p></div>
+      <div class="data-box"><p class="label">☔ Lluvia acumulada</p><p class="value" id="rain-total">--</p></div>
       <div class="data-box"><p class="label">🌡️ Sensación térmica</p><p class="value" id="feels-like">--</p></div>
       <div class="data-box"><p class="label">🌍 Presión</p><p class="value" id="pressure">--</p></div>
       <div class="data-box"><p class="label">☀️ Índice UV</p><p class="value" id="uv-index">--</p></div>
@@ -99,6 +96,7 @@
         document.getElementById('humidity').textContent = `${obs.humidity} %`;
         document.getElementById('wind-speed').textContent = `${metric.windSpeed} km/h`;
         document.getElementById('rainfall').textContent = `${metric.precipTotal} mm`;
+        document.getElementById('rain-total').textContent = `${metric.precipTotal} mm`;
         document.getElementById('feels-like').textContent = `${metric.heatIndex} °C`;
         document.getElementById('pressure').textContent = `${metric.pressure} hPa`;
         document.getElementById('uv-index').textContent = obs.uv;
