@@ -11,7 +11,6 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      
       min-height: 100vh;
       position: relative;
       transition: background-color 1s;
@@ -35,7 +34,6 @@
       width: 90%;
       max-width: 500px;
       text-align: center;
-      
       margin-bottom: 20px;
     }
     .data-grid {
@@ -81,13 +79,12 @@
   <h1 class="text-4xl font-bold text-white mb-4">ALFARNATE</h1>
 
   <div class="weather-screen">
-    <h1 class="text-2xl font-bold">📡 Estación Meteorológica en tiempo real</h1>
+    <h1 class="text-2xl font-bold">📡 Estación Meteorológica en tiempo real cada minuto</h1>
     <div class="data-grid">
       <div class="data-box"><p class="label">🌡️ Temperatura</p><p class="value" id="temperature">--</p></div>
       <div class="data-box"><p class="label">💧 Humedad</p><p class="value" id="humidity">--</p></div>
       <div class="data-box"><p class="label">💨 Viento</p><p class="value" id="wind-speed">--</p></div>
       <div class="data-box"><p class="label">🧭 Dirección</p><p class="value" id="wind-dir">--</p></div>
-
       <div class="data-box"><p class="label">🌧️ Lluvia</p><p class="value" id="rainfall">--</p></div>
       <div class="data-box"><p class="label">🌍 Presión</p><p class="value" id="pressure">--</p></div>
       <div class="data-box"><p class="label">☀️ Índice UV</p><p class="value" id="uv-index">--</p></div>
@@ -96,10 +93,12 @@
     <p id="error-message" class="text-red-500 text-sm mt-2 hidden"></p>
   </div>
 
-  
-<h2 class="text-xl font-bold text-white mb-2">🔮 Pronóstico</h2>
-<iframe name="iframe_aemet_id33044" width="100%" height="220" tabindex="0" id="iframe_aemet_id33044" src="https://www.aemet.es/es/eltiempo/prediccion/municipios/mostrarwidget/alfarnate-id29003?w=g4p11110011ohmffccffw992.8z224.8x4f86d9t95b6e9r0s8n2" frameborder="0" scrolling="no" style="margin-bottom: 30px; border-radius: 10px; "></iframe>
-<div class="weather-screen">
+  <div class="weather-screen">
+    <h2 class="text-xl font-bold mb-4">🔮 Pronóstico de 7 días</h2>
+    <div id="forecast" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-left"></div>
+  </div>
+
+  <div class="weather-screen">
     <h2 class="text-xl font-bold mb-2">📅 Lluvia por mes</h2>
     <input id="mes-selector" type="month" class="text-black p-2 rounded mb-2" />
     <button id="boton-mes" class="top-right-button">🔎 Consultar mes</button>
@@ -108,16 +107,7 @@
     <canvas id="grafico-lluvia" width="400" height="200" class="mt-4"></canvas>
   </div>
 
-  
-
   <script>
-    function actualizarFondo() {
-      const hora = new Date().getHours();
-      document.body.style.background = (hora >= 7 && hora < 20)
-        ? 'linear-gradient(135deg, #202c3b, #2d3e50)'
-        : 'linear-gradient(135deg, #0c1624, #1a2636)';
-    }
-
     async function fetchWeatherData() {
       const apiKey = 'b766892fc8e04176a6892fc8e0217600';
       const stationId = 'IHURCA32';
@@ -143,12 +133,11 @@
         const cardinal = dirs[idx];
         document.getElementById('wind-dir').textContent = `${dir}° (${cardinal})`;
         document.getElementById('rainfall').textContent = `${metric.precipTotal} mm`;
-                document.getElementById('pressure').textContent = `${metric.pressure} hPa`;
+        document.getElementById('pressure').textContent = `${metric.pressure} hPa`;
         document.getElementById('uv-index').textContent = obs.uv;
         document.getElementById('time').textContent = new Date(obs.obsTimeLocal).toLocaleString();
 
         document.getElementById('error-message').classList.add('hidden');
-        actualizarFondo();
       } catch (err) {
         console.error("⚠️ Error al obtener los datos:", err);
         const msg = document.getElementById('error-message');
@@ -158,54 +147,38 @@
     }
 
     async function fetchForecast() {
-      const lat = 37.3865;
-      const lon = -1.9455;
+      const lat = 36.985;
+      const lon = -4.223;
       const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_min,temperature_2m_max,weathercode,precipitation_probability_max&timezone=auto&forecast_days=7`;
 
       try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-        const data = await response.json();
+        const res = await fetch(url);
+        const data = await res.json();
+        const forecastDiv = document.getElementById("forecast");
 
-        const container = document.getElementById('forecast');
-        container.innerHTML = '';
+        const dias = data.daily.time;
+        const min = data.daily.temperature_2m_min;
+        const max = data.daily.temperature_2m_max;
+        const code = data.daily.weathercode;
+        const lluvia = data.daily.precipitation_probability_max;
 
-        const dates = data.daily.time;
-        const minTemps = data.daily.temperature_2m_min;
-        const maxTemps = data.daily.temperature_2m_max;
-        const weatherCodes = data.daily.weathercode;
-        const rainProb = data.daily.precipitation_probability_max;
-
-        const weatherDescriptions = {
-          0: 'Despejado ☀️', 1: 'Principalmente despejado 🌤️', 2: 'Parcialmente nublado ⛅',
-          3: 'Nublado ☁️', 45: 'Niebla 🌫️', 48: 'Niebla con escarcha 🌫️❄️',
+        const desc = {
+          0: 'Despejado ☀️', 1: 'Mayormente despejado 🌤️', 2: 'Parcialmente nublado ⛅',
+          3: 'Nublado ☁️', 45: 'Niebla 🌫️', 48: 'Niebla escarchada 🌫️❄️',
           51: 'Llovizna ligera 🌦️', 53: 'Llovizna moderada 🌧️', 55: 'Llovizna densa 🌧️',
           61: 'Lluvia ligera 🌦️', 63: 'Lluvia moderada 🌧️', 65: 'Lluvia intensa 🌧️',
           71: 'Nieve ligera 🌨️', 73: 'Nieve moderada 🌨️', 75: 'Nieve intensa ❄️',
           80: 'Chubascos ligeros 🌦️', 81: 'Chubascos moderados 🌧️', 82: 'Chubascos fuertes ⛈️'
         };
 
-        for (let i = 0; i < dates.length; i++) {
-          const date = new Date(dates[i]);
-          const dayName = date.toLocaleDateString('es-ES', { weekday: 'long' });
-          const min = minTemps[i];
-          const max = maxTemps[i];
-          const code = weatherCodes[i];
-          const desc = weatherDescriptions[code] || 'Clima desconocido';
-          const rain = rainProb[i];
-
-          const entry = document.createElement('div');
-          entry.innerHTML = `
-            <div class="text-left">
-              <strong>${dayName}:</strong> ${desc}<br>
-              🌡️ ${min}°C - ${max}°C<br>
-              🌧️ ${rain}%
-            </div>`;
-          container.appendChild(entry);
+        forecastDiv.innerHTML = '';
+        for (let i = 0; i < dias.length; i++) {
+          const dia = new Date(dias[i]).toLocaleDateString('es-ES', { weekday: 'long' });
+          forecastDiv.innerHTML += `<div><strong>${dia}</strong><br>${desc[code[i]] || 'Clima'}<br>🌡️ ${min[i]}°C - ${max[i]}°C<br>🌧️ ${lluvia[i]}%</div>`;
         }
-      } catch (err) {
-        console.error("⚠️ Error al obtener el pronóstico:", err);
-        document.getElementById('forecast').textContent = `⚠️ Error: ${err.message}`;
+      } catch (e) {
+        document.getElementById("forecast").textContent = "Error al cargar el pronóstico";
+        console.error("Error al obtener pronóstico:", e);
       }
     }
 
@@ -296,3 +269,4 @@
   </script>
 </body>
 </html>
+
